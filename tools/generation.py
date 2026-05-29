@@ -82,7 +82,9 @@ def register_workflow_generation_tools(
             try:
                 # Only validate model if the workflow actually has a 'model' parameter
                 has_model_param = "model" in definition.parameters
-                if has_model_param:
+                # Skip namespace-level model validation when the workflow defines its own model default
+                has_workflow_model_default = "model" in definition.workflow_defaults
+                if has_model_param and not has_workflow_model_default:
                     provided_model = dict(bound.arguments).get("model")
                     resolved_model = defaults_manager.get_default(namespace, "model", provided_model)
 

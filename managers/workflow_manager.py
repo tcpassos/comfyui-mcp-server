@@ -24,8 +24,8 @@ PLACEHOLDER_TYPE_HINTS = {
 PLACEHOLDER_DESCRIPTIONS = {
     "prompt": "Main text prompt used inside the workflow.",
     "seed": "Random seed for image generation. If not provided, a random seed will be generated.",
-    "width": "Image width in pixels. Default: 512.",
-    "height": "Image height in pixels. Default: 512.",
+    "width": "Image width in pixels. For Anima (SDXL), default is 768. Recommended: 512-1536 in multiples of 64.",
+    "height": "Image height in pixels. For Anima (SDXL), default is 1280. Recommended: 512-1536 in multiples of 64.",
     "model": "Checkpoint model name (e.g., 'v1-5-pruned-emaonly.ckpt', 'sd_xl_base_1.0.safetensors'). Default: 'v1-5-pruned-emaonly.ckpt'.",
     "steps": "Number of sampling steps. Higher = better quality but slower. Default: 20.",
     "cfg": "Classifier-free guidance scale. Higher = more adherence to prompt. Default: 8.0.",
@@ -289,6 +289,9 @@ class WorkflowManager:
             return definitions
 
         for workflow_path in sorted(self.workflows_dir.glob("*.json")):
+            # Skip metadata sidecar files
+            if workflow_path.name.endswith(".meta.json"):
+                continue
             try:
                 with open(workflow_path, "r", encoding="utf-8") as handle:
                     workflow = json.load(handle)
@@ -306,6 +309,7 @@ class WorkflowManager:
                 continue
 
             tool_name = self._dedupe_tool_name(self._derive_tool_name(workflow_path.stem))
+            metadata = self._load_workflow_metadata(workflow_path)
             definition = WorkflowToolDefinition(
                 workflow_id=workflow_path.stem,
                 tool_name=tool_name,
@@ -313,6 +317,7 @@ class WorkflowManager:
                 template=workflow,
                 parameters=parameters,
                 output_preferences=self._guess_output_preferences(workflow),
+                workflow_defaults=metadata.get("defaults", {}),
             )
             # Store initial mtime for cache invalidation
             try:
@@ -351,6 +356,10 @@ class WorkflowManager:
                     # Special handling for seed - generate random
                     raw_value = random.randint(0, 2**32 - 1)
                     logger.debug(f"Generated random seed: {raw_value}")
+                elif param.name in definition.workflow_defaults:
+                    # Workflow-level defaults (from meta.json) take priority over namespace defaults
+                    raw_value = definition.workflow_defaults[param.name]
+                    logger.debug(f"Using workflow default for {param.name}: {raw_value}")
                 elif defaults_manager:
                     # Use defaults manager to get value with proper precedence
                     raw_value = defaults_manager.get_default(namespace, param.name, None)

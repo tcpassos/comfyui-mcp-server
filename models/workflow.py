@@ -23,3 +23,4 @@ class WorkflowToolDefinition:
     template: Dict[str, Any]
     parameters: "OrderedDict[str, WorkflowParameter]"
     output_preferences: Sequence[str]
+    workflow_defaults: Dict[str, Any] = field(default_factory=dict)

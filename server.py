@@ -9,6 +9,9 @@ from pathlib import Path
 from typing import AsyncIterator
 
 import requests
+import anyio
+import uvicorn
+from starlette.middleware.cors import CORSMiddleware
 
 from mcp.server.fastmcp import FastMCP
 
@@ -231,6 +234,24 @@ if __name__ == "__main__":
         logger.info("Starting MCP server with streamable-http transport on http://127.0.0.1:9000/mcp")
         logger.info(f"ComfyUI verified at: {COMFYUI_URL}")
         try:
-            mcp.run(transport="streamable-http")
+            starlette_app = mcp.streamable_http_app()
+            app_with_cors = CORSMiddleware(
+                starlette_app,
+                allow_origins=["*"],
+                allow_methods=["GET", "POST", "OPTIONS"],
+                allow_headers=["*"],
+            )
+
+            async def _serve():
+                config = uvicorn.Config(
+                    app_with_cors,
+                    host="127.0.0.1",
+                    port=9000,
+                    log_level="info",
+                )
+                server = uvicorn.Server(config)
+                await server.serve()
+
+            anyio.run(_serve)
         except KeyboardInterrupt:
             print("\n[*] Server stopped.")

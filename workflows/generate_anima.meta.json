@@ -1,0 +1,10 @@
+{
+  "name": "Generate Anima Image",
+  "description": "Generate an anime-style image using the Anima diffusion model. Optimized for Danbooru tag + natural language prompts. Use the quality prefix format: masterpiece, best quality, score_7, safe/nsfw, <tags>",
+  "defaults": {
+    "negative_prompt": "worst quality, low quality, score_1, score_2, score_3, blurry, jpeg artifacts, sepia",
+    "width": 768,
+    "height": 1280,
+    "model": "ANIMA\\hassakuAnima_v01.safetensors"
+  }
+}

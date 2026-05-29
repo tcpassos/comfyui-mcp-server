@@ -142,10 +142,14 @@ class ComfyUIClient:
                     continue
                 if node_data.get("class_type") == "EmptyLatentImage":
                     inputs = node_data.get("inputs", {})
-                    if "width" in inputs and metadata["width"] is None:
-                        metadata["width"] = inputs["width"]
-                    if "height" in inputs and metadata["height"] is None:
-                        metadata["height"] = inputs["height"]
+                    # ComfyUI inputs may be literals or graph refs like ["node_id", slot];
+                    # only accept literal numerics, let the image-bytes fallback handle refs.
+                    w = inputs.get("width")
+                    h = inputs.get("height")
+                    if isinstance(w, (int, float)) and metadata["width"] is None:
+                        metadata["width"] = int(w)
+                    if isinstance(h, (int, float)) and metadata["height"] is None:
+                        metadata["height"] = int(h)
                     if metadata["width"] and metadata["height"]:
                         break
         

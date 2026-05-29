@@ -1,0 +1,935 @@
+{
+  "4": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Carregar VAE"
+    }
+  },
+  "6": {
+    "inputs": {
+      "clip_name": "qwen_3_06b_base.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP (Anima)"
+    }
+  },
+  "8": {
+    "inputs": {
+      "unet_name": "PARAM_STR_MODEL",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Carregar Modelo de Difusão"
+    }
+  },
+  "9": {
+    "inputs": {
+      "lora_name": "ANIMA\\anima-turbo-lora-v0.2.safetensors",
+      "strength_model": 1,
+      "model": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "LoraLoaderModelOnly"
+    }
+  },
+  "10": {
+    "inputs": {
+      "switch": [
+        "11",
+        1
+      ],
+      "on_false": [
+        "8",
+        0
+      ],
+      "on_true": [
+        "9",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "Alternar"
+    }
+  },
+  "11": {
+    "inputs": {
+      "any_input": [
+        "76",
+        0
+      ]
+    },
+    "class_type": "ImpactIfNone",
+    "_meta": {
+      "title": "ImpactIfNone"
+    }
+  },
+  "12": {
+    "inputs": {
+      "text": "True",
+      "anything": [
+        "11",
+        1
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "Is turbo mode on?"
+    }
+  },
+  "22": {
+    "inputs": {
+      "text": "1.40625",
+      "anything": [
+        "45:121",
+        1
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "UPSCALE FACTOR"
+    }
+  },
+  "25": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)",
+    "_meta": {
+      "title": "Power Lora Loader (rgthree)"
+    }
+  },
+  "65": {
+    "inputs": {
+      "value": "PARAM_STR_NEGATIVE_PROMPT"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "NEGATIVE PROMPT"
+    }
+  },
+  "67": {
+    "inputs": {
+      "value": "PARAM_STR_PROMPT"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "POSITIVE PROMPT"
+    }
+  },
+  "72": {
+    "inputs": {
+      "value": 10
+    },
+    "class_type": "easy int",
+    "_meta": {
+      "title": "STEPS (Turbo)"
+    }
+  },
+  "73": {
+    "inputs": {
+      "string_a": [
+        "67",
+        0
+      ],
+      "string_b": [
+        "74",
+        0
+      ],
+      "delimiter": ""
+    },
+    "class_type": "StringConcatenate",
+    "_meta": {
+      "title": "Concatenar"
+    }
+  },
+  "74": {
+    "inputs": {
+      "value": "(sweaty, sweatdrop:-2.0)"
+    },
+    "class_type": "PrimitiveString",
+    "_meta": {
+      "title": "Texto"
+    }
+  },
+  "76": {
+    "inputs": {
+      "value": "ACTIVATION SIGNAL"
+    },
+    "class_type": "PrimitiveString",
+    "_meta": {
+      "title": "TURBO SIGNAL"
+    }
+  },
+  "77": {
+    "inputs": {
+      "value": 4
+    },
+    "class_type": "easy float",
+    "_meta": {
+      "title": "CFG (Base)"
+    }
+  },
+  "78": {
+    "inputs": {
+      "value": 35
+    },
+    "class_type": "easy int",
+    "_meta": {
+      "title": "STEPS (Base)"
+    }
+  },
+  "79": {
+    "inputs": {
+      "value": 1
+    },
+    "class_type": "easy float",
+    "_meta": {
+      "title": "CFG (Turbo)"
+    }
+  },
+  "85": {
+    "inputs": {
+      "model": [
+        "25",
+        0
+      ],
+      "clip": [
+        "6",
+        0
+      ]
+    },
+    "class_type": "CLIPNegPip",
+    "_meta": {
+      "title": "CLIP NegPip"
+    }
+  },
+  "86": {
+    "inputs": {
+      "any_01": [
+        "72",
+        0
+      ],
+      "any_02": [
+        "78",
+        0
+      ]
+    },
+    "class_type": "Any Switch (rgthree)",
+    "_meta": {
+      "title": "Any Switch (rgthree)"
+    }
+  },
+  "87": {
+    "inputs": {
+      "any_01": [
+        "79",
+        0
+      ],
+      "any_02": [
+        "77",
+        0
+      ]
+    },
+    "class_type": "Any Switch (rgthree)",
+    "_meta": {
+      "title": "Any Switch (rgthree)"
+    }
+  },
+  "115": {
+    "inputs": {
+      "image": [
+        "166:164",
+        0
+      ]
+    },
+    "class_type": "easy imageSize",
+    "_meta": {
+      "title": "ImageSize"
+    }
+  },
+  "127": {
+    "inputs": {
+      "node_id": "161",
+      "input_name": "denoise"
+    },
+    "class_type": "Workflow Input Value (Image Saver)",
+    "_meta": {
+      "title": "DENOISE"
+    }
+  },
+  "128": {
+    "inputs": {
+      "text": "1",
+      "anything": [
+        "87",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "CFG"
+    }
+  },
+  "129": {
+    "inputs": {
+      "text": "anima-base-v1.0.safetensors",
+      "anything": [
+        "141",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "Difussion model"
+    }
+  },
+  "130": {
+    "inputs": {
+      "text": "er_sde",
+      "anything": [
+        "148",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "Sampler"
+    }
+  },
+  "136": {
+    "inputs": {
+      "text": "anima-base-v1.0:bd43b7cffe,ANIMA\\anima-turbo-lora-v0.2:1b55e40bdb:1.0,manual1:7",
+      "anything": [
+        "203:149",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "CIVITAI HASHES"
+    }
+  },
+  "139": {
+    "inputs": {
+      "text": "1.0",
+      "anything": [
+        "127",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "Denoise"
+    }
+  },
+  "141": {
+    "inputs": {
+      "node_id": "8",
+      "input_name": "unet_name"
+    },
+    "class_type": "Workflow Input Value (Image Saver)",
+    "_meta": {
+      "title": "MODEL"
+    }
+  },
+  "143": {
+    "inputs": {
+      "node_id": "161",
+      "input_name": "scheduler"
+    },
+    "class_type": "Workflow Input Value (Image Saver)",
+    "_meta": {
+      "title": "SCHEDULER"
+    }
+  },
+  "144": {
+    "inputs": {
+      "text": "simple",
+      "anything": [
+        "143",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "Scheduler"
+    }
+  },
+  "146": {
+    "inputs": {
+      "id": 25,
+      "widget_name": "",
+      "return_all": true,
+      "node_title": "",
+      "allowed_float_decimals": 2
+    },
+    "class_type": "WidgetToString",
+    "_meta": {
+      "title": "POWER LORA LOADER"
+    }
+  },
+  "148": {
+    "inputs": {
+      "node_id": "156",
+      "input_name": "sampler_name"
+    },
+    "class_type": "Workflow Input Value (Image Saver)",
+    "_meta": {
+      "title": "SAMPLER"
+    }
+  },
+  "150": {
+    "inputs": {
+      "text": "masterpiece, best quality, score_7, nsfw, explicit 1girl, frieren, sousou no frieren, pointy ears, earrings, twintails, long hair, green eyes, white hair, parted bangs, grey hair, teardrop earrings, bare skin, nude, topless, bathtub, wooden tub, steam, wet hair, pale skin\n\nShe is sitting in a deep wooden bathtub filled with warm water, her body glistening with droplets and steam rising softly around her. Her long twin-tailed hair floats gently in the water, partially wet and clinging to her shoulders as she leans back against the tub's edge. She gazes directly at the viewer with an alluring, slightly parted-lip expression that conveys both confidence and playful sensuality, her green eyes catching the warm ambient light. The cozy cabin surrounds her with soft wooden textures, a plush white towel draped over one armrest, and gentle candlelight reflecting off the water's surface to create intimate shadows across her pale skin.(sweaty, sweatdrop:-2.0) <lora:ANIMA\\anima-turbo-lora-v0.2.safetensors:1.0>",
+      "anything": [
+        "203:135",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "FORMATED PROMPT"
+    }
+  },
+  "156": {
+    "inputs": {
+      "sampler_name": "er_sde"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "SAMPLER"
+    }
+  },
+  "161": {
+    "inputs": {
+      "scheduler": "simple",
+      "steps": [
+        "86",
+        0
+      ],
+      "denoise": 1,
+      "model": [
+        "85",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "SCHEDULER"
+    }
+  },
+  "183": {
+    "inputs": {
+      "node_id": "9",
+      "input_name": "lora_name"
+    },
+    "class_type": "Workflow Input Value (Image Saver)",
+    "_meta": {
+      "title": "TURBO LORA FILE"
+    }
+  },
+  "186": {
+    "inputs": {
+      "node_id": "9",
+      "input_name": "strength_model"
+    },
+    "class_type": "Workflow Input Value (Image Saver)",
+    "_meta": {
+      "title": "TURBO LORA STRENGTH"
+    }
+  },
+  "227": {
+    "inputs": {
+      "value": "PARAM_INT_WIDTH"
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Width"
+    }
+  },
+  "229": {
+    "inputs": {
+      "value": "PARAM_INT_HEIGHT"
+    },
+    "class_type": "PrimitiveInt",
+    "_meta": {
+      "title": "Height"
+    }
+  },
+  "45:41": {
+    "inputs": {
+      "string": "921600, 2073600, 3686400, 8294400"
+    },
+    "class_type": "easy stringToIntList",
+    "_meta": {
+      "title": "String to Int List"
+    }
+  },
+  "45:42": {
+    "inputs": {
+      "index": [
+        "45:44",
+        1
+      ],
+      "any": [
+        "45:41",
+        0
+      ]
+    },
+    "class_type": "easy indexAnything",
+    "_meta": {
+      "title": "Index Any"
+    }
+  },
+  "45:121": {
+    "inputs": {
+      "expression": "sqrt(a/(b*c))",
+      "a": [
+        "45:42",
+        0
+      ],
+      "b": [
+        "227",
+        0
+      ],
+      "c": [
+        "229",
+        0
+      ]
+    },
+    "class_type": "MathExpression|pysssss",
+    "_meta": {
+      "title": "Math Expression 🐍"
+    }
+  },
+  "45:44": {
+    "inputs": {
+      "choice": "1080p",
+      "index": 1,
+      "option1": "720p",
+      "option2": "1080p",
+      "option3": "1440p",
+      "option4": "4K",
+      "option5": ""
+    },
+    "class_type": "CustomCombo",
+    "_meta": {
+      "title": "Combo Personalizado"
+    }
+  },
+  "203:123": {
+    "inputs": {
+      "image": [
+        "166:164",
+        0
+      ]
+    },
+    "class_type": "Get Image Size",
+    "_meta": {
+      "title": "Get Image Size"
+    }
+  },
+  "203:138": {
+    "inputs": {
+      "delimiter": "",
+      "string1": [
+        "203:137",
+        0
+      ],
+      "string2": [
+        "203:142",
+        0
+      ]
+    },
+    "class_type": "JoinStrings",
+    "_meta": {
+      "title": "Join Strings"
+    }
+  },
+  "203:135": {
+    "inputs": {
+      "delimiter": " ",
+      "string1": [
+        "73",
+        0
+      ],
+      "string2": [
+        "203:133",
+        0
+      ]
+    },
+    "class_type": "JoinStrings",
+    "_meta": {
+      "title": "Join Strings"
+    }
+  },
+  "203:200": {
+    "inputs": {
+      "value": ""
+    },
+    "class_type": "PrimitiveString",
+    "_meta": {
+      "title": "Texto"
+    }
+  },
+  "203:181": {
+    "inputs": {
+      "any_input": [
+        "76",
+        0
+      ]
+    },
+    "class_type": "ImpactIfNone",
+    "_meta": {
+      "title": "ImpactIfNone"
+    }
+  },
+  "203:182": {
+    "inputs": {
+      "switch": [
+        "203:181",
+        1
+      ],
+      "on_false": [
+        "203:200",
+        0
+      ],
+      "on_true": [
+        "203:196",
+        0
+      ]
+    },
+    "class_type": "ComfySwitchNode",
+    "_meta": {
+      "title": "Alternar"
+    }
+  },
+  "203:196": {
+    "inputs": {
+      "outputs": {
+        "outputs": [
+          "STRING"
+        ]
+      },
+      "code": "f\"<lora:{a}:{b}>\"",
+      "a": [
+        "183",
+        0
+      ],
+      "b": [
+        "186",
+        0
+      ]
+    },
+    "class_type": "Power Puter (rgthree)",
+    "_meta": {
+      "title": "Power Puter (rgthree)"
+    }
+  },
+  "203:137": {
+    "inputs": {
+      "value": "Workflow:"
+    },
+    "class_type": "PrimitiveString",
+    "_meta": {
+      "title": "Texto"
+    }
+  },
+  "203:142": {
+    "inputs": {
+      "username": "latentheart",
+      "model_name": "Anima 1.0 Base for the PC master race [SFW / NSFW] - Image to prompt + Turbo mode + ControlNet + 4k upscaler + CivitAI medatada",
+      "version": ""
+    },
+    "class_type": "Civitai Hash Fetcher (Image Saver)",
+    "_meta": {
+      "title": "Civitai Hash Fetcher (Image Saver)"
+    }
+  },
+  "203:202": {
+    "inputs": {
+      "delimiter": "",
+      "string1": [
+        "203:132",
+        0
+      ],
+      "string2": ""
+    },
+    "class_type": "JoinStrings",
+    "_meta": {
+      "title": "Join Strings"
+    }
+  },
+  "203:133": {
+    "inputs": {
+      "text": "<lora:ANIMA\\anima-turbo-lora-v0.2.safetensors:1.0>",
+      "anything": [
+        "203:202",
+        0
+      ]
+    },
+    "class_type": "easy showAnything",
+    "_meta": {
+      "title": "Show Any"
+    }
+  },
+  "203:132": {
+    "inputs": {
+      "string": [
+        "203:131",
+        0
+      ],
+      "regex_pattern": "<lora:[^>]+>",
+      "mode": "All Matches",
+      "case_insensitive": true,
+      "multiline": false,
+      "dotall": false,
+      "group_index": 1
+    },
+    "class_type": "RegexExtract",
+    "_meta": {
+      "title": "Extração por Regex"
+    }
+  },
+  "203:131": {
+    "inputs": {
+      "string": "",
+      "regex_pattern": "lora_\\d+: \\{'on': True, 'lora': '([^']+?)\\.safetensors', 'strength': (\\d*\\.?\\d+)\\}",
+      "replace": "<lora:\\1:\\2>",
+      "case_insensitive": true,
+      "multiline": false,
+      "dotall": false,
+      "count": 0
+    },
+    "class_type": "RegexReplace",
+    "_meta": {
+      "title": "Substituir por Regex"
+    }
+  },
+  "203:149": {
+    "inputs": {
+      "filename": "Anima_%time_%seed",
+      "path": "CivitAI",
+      "extension": "png",
+      "steps": [
+        "86",
+        0
+      ],
+      "cfg": [
+        "128",
+        0
+      ],
+      "modelname": [
+        "129",
+        0
+      ],
+      "sampler_name": [
+        "130",
+        0
+      ],
+      "scheduler_name": [
+        "144",
+        0
+      ],
+      "positive": [
+        "203:135",
+        0
+      ],
+      "negative": "",
+      "seed_value": 0,
+      "width": [
+        "203:123",
+        0
+      ],
+      "height": [
+        "203:123",
+        1
+      ],
+      "lossless_webp": true,
+      "quality_jpeg_or_webp": 100,
+      "optimize_png": false,
+      "counter": 0,
+      "denoise": [
+        "139",
+        0
+      ],
+      "clip_skip": 0,
+      "time_format": "%Y-%m-%d-%H%M%S",
+      "save_workflow_as_json": false,
+      "embed_workflow": true,
+      "additional_hashes": [
+        "203:142",
+        0
+      ],
+      "download_civitai_data": true,
+      "easy_remix": true,
+      "show_preview": true,
+      "custom": "",
+      "images": [
+        "166:164",
+        0
+      ]
+    },
+    "class_type": "Image Saver",
+    "_meta": {
+      "title": "Image Saver"
+    }
+  },
+  "166:159": {
+    "inputs": {
+      "noise_seed": [
+        "166:165",
+        0
+      ]
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "Ruído Aleatório"
+    }
+  },
+  "166:160": {
+    "inputs": {
+      "cfg": [
+        "87",
+        0
+      ],
+      "model": [
+        "85",
+        0
+      ],
+      "positive": [
+        "166:163",
+        0
+      ],
+      "negative": [
+        "166:162",
+        0
+      ]
+    },
+    "class_type": "CFGGuider",
+    "_meta": {
+      "title": "CFGGuider"
+    }
+  },
+  "166:162": {
+    "inputs": {
+      "text": [
+        "65",
+        0
+      ],
+      "clip": [
+        "85",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Negative Prompt)"
+    }
+  },
+  "166:163": {
+    "inputs": {
+      "text": [
+        "73",
+        0
+      ],
+      "clip": [
+        "85",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive Prompt)"
+    }
+  },
+  "166:164": {
+    "inputs": {
+      "samples": [
+        "166:157",
+        1
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decodificar"
+    }
+  },
+  "166:158": {
+    "inputs": {
+      "width": [
+        "227",
+        0
+      ],
+      "height": [
+        "229",
+        0
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Imagem Latente Vazia"
+    }
+  },
+  "166:157": {
+    "inputs": {
+      "noise": [
+        "166:159",
+        0
+      ],
+      "guider": [
+        "166:160",
+        0
+      ],
+      "sampler": [
+        "156",
+        0
+      ],
+      "sigmas": [
+        "161",
+        0
+      ],
+      "latent_image": [
+        "166:158",
+        0
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced"
+    }
+  },
+  "166:165": {
+    "inputs": {
+      "seed": 555774481186352
+    },
+    "class_type": "Seed (rgthree)",
+    "_meta": {
+      "title": "Seed (rgthree)"
+    }
+  }
+}

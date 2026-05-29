@@ -1,11 +1,37 @@
 """Shared helper functions for tool implementations"""
 
+import json
 import logging
 from typing import Any, Dict, Optional
+
+from mcp.types import ImageContent, TextContent
 
 from asset_processor import encode_preview_for_mcp, fetch_asset_bytes, get_cache_key
 
 logger = logging.getLogger("MCP_Server")
+
+
+_SEED_KEYS = ("seed", "noise_seed")
+
+
+def _extract_seed(workflow: Optional[Dict[str, Any]]) -> Optional[int]:
+    """Scan a rendered ComfyUI workflow for the primary integer seed.
+
+    Looks at any node whose `inputs` contain a literal integer under a known seed key
+    (`seed` or `noise_seed`). Skips graph references (lists/tuples). Returns the seed
+    from the first matching node in insertion order, or None if no seed is found.
+    """
+    if not isinstance(workflow, dict):
+        return None
+    for node in workflow.values():
+        inputs = node.get("inputs") if isinstance(node, dict) else None
+        if not isinstance(inputs, dict):
+            continue
+        for key in _SEED_KEYS:
+            value = inputs.get(key)
+            if isinstance(value, int) and not isinstance(value, bool):
+                return value
+    return None
 
 
 def register_and_build_response(
@@ -59,57 +85,62 @@ def register_and_build_response(
     )
     
     # Build response data
-    # Use asset_record.asset_url (computed from stable identity)
     asset_url = asset_record.asset_url or result.get("asset_url", "")
+    seed = _extract_seed(result.get("submitted_workflow"))
     response_data = {
         "asset_id": asset_record.asset_id,
         "asset_url": asset_url,
-        "image_url": asset_url,  # Backward compatibility
-        "filename": asset_record.filename,  # Stable identity
-        "subfolder": asset_record.subfolder,  # Stable identity
-        "folder_type": asset_record.folder_type,  # Stable identity
+        "image_url": asset_url,
+        "filename": asset_record.filename,
+        "subfolder": asset_record.subfolder,
+        "folder_type": asset_record.folder_type,
         "workflow_id": workflow_id,
         "prompt_id": result.get("prompt_id"),
         "mime_type": asset_record.mime_type,
         "width": asset_record.width,
         "height": asset_record.height,
         "bytes_size": asset_record.bytes_size,
+        "seed": seed,
     }
-    
+
     if tool_name:
         response_data["tool"] = tool_name
-    
+
     # Include inline preview if requested
     if return_inline_preview:
         try:
-            # Only generate preview for images
             supported_types = ("image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif")
             if asset_record.mime_type in supported_types:
-                # Use asset URL (computed from stable identity)
-                preview_url = asset_url
-                if not preview_url:
-                    # Fallback: compute from stable identity
-                    preview_url = asset_record.get_asset_url(asset_registry.comfyui_base_url)
-                # Use new encoding function with conservative budget
+                preview_url = asset_url or asset_record.get_asset_url(asset_registry.comfyui_base_url)
                 image_bytes = fetch_asset_bytes(preview_url)
-                cache_key = get_cache_key(asset_record.asset_id, 256, 70)
+                cache_key = get_cache_key(asset_record.asset_id, 512, 80)
                 encoded = encode_preview_for_mcp(
                     image_bytes,
-                    max_dim=256,
-                    max_b64_chars=100_000,  # ~100KB base64
-                    quality=70,
+                    max_dim=512,
+                    max_b64_chars=500_000,
+                    quality=80,
                     cache_key=cache_key,
                 )
-                # Convert to data URI format for backward compatibility
-                response_data["inline_preview_base64"] = f"data:{encoded.mime_type};base64,{encoded.b64}"
-                response_data["inline_preview_mime_type"] = encoded.mime_type
+                # Return MCP content list: ImageContent lets the model "see" the image
+                # via its vision capability. TextContent carries the metadata.
+                return [
+                    TextContent(
+                        type="text",
+                        text=json.dumps(response_data, ensure_ascii=False),
+                    ),
+                    ImageContent(
+                        type="image",
+                        data=encoded.b64,
+                        mimeType=encoded.mime_type,
+                    ),
+                ]
         except Exception as e:
-            logger.warning(f"Failed to generate inline preview: {e}")
-            # Don't fail the request if preview generation fails
-    
+            logger.warning("Failed to generate inline preview: %s", e)
+
     # Include base64 image data if available (legacy)
     if "image_base64" in result:
         response_data["image_base64"] = result["image_base64"]
         response_data["image_mime_type"] = result.get("image_mime_type", "image/png")
-    
+
     return response_data
+
