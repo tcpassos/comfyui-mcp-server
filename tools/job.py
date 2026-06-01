@@ -326,3 +326,26 @@ def register_job_tools(
         except Exception as e:
             logger.exception(f"Failed to cancel job {prompt_id}")
             return {"error": str(e)}
+
+    @mcp.tool()
+    def free_memory(unload_models: bool = True, free_memory: bool = True) -> dict:
+        """Free ComfyUI VRAM by unloading models and clearing caches.
+
+        Hits ComfyUI's POST /free endpoint. Useful between generations or
+        before handing GPU back to other workloads (e.g. another model server).
+
+        Args:
+            unload_models: unload all currently loaded checkpoints/LoRAs (default True).
+            free_memory: release cached tensors / torch.cuda.empty_cache() (default True).
+
+        Returns:
+            Dict with status info.
+        """
+        try:
+            return comfyui_client.free_memory(
+                unload_models=unload_models,
+                free_memory=free_memory,
+            )
+        except Exception as e:
+            logger.exception("Failed to free ComfyUI memory")
+            return {"error": str(e)}

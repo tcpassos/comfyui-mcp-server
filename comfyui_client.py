@@ -519,3 +519,27 @@ class ComfyUIClient:
         except requests.RequestException as e:
             logger.error(f"Failed to cancel prompt {prompt_id}: {e}")
             raise Exception(f"Failed to cancel prompt: {e}")
+
+    def free_memory(self, unload_models: bool = True, free_memory: bool = True) -> Dict[str, Any]:
+        """Ask ComfyUI to unload models and/or free VRAM via POST /free.
+
+        Args:
+            unload_models: unload all currently loaded checkpoints/LoRAs from VRAM.
+            free_memory: release cached tensors and run torch.cuda.empty_cache().
+
+        Returns:
+            Dict with status info. ComfyUI returns empty body on success (HTTP 200).
+        """
+        try:
+            payload = {"unload_models": unload_models, "free_memory": free_memory}
+            response = requests.post(f"{self.base_url}/free", json=payload, timeout=30)
+            response.raise_for_status()
+            return {
+                "status": "success",
+                "unload_models": unload_models,
+                "free_memory": free_memory,
+                "http_status": response.status_code,
+            }
+        except requests.RequestException as e:
+            logger.error(f"Failed to free memory: {e}")
+            raise Exception(f"Failed to free memory: {e}")

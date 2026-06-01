@@ -536,18 +536,6 @@
       "title": "Combo Personalizado"
     }
   },
-  "203:123": {
-    "inputs": {
-      "image": [
-        "166:164",
-        0
-      ]
-    },
-    "class_type": "Get Image Size",
-    "_meta": {
-      "title": "Get Image Size"
-    }
-  },
   "203:138": {
     "inputs": {
       "delimiter": "",
@@ -757,12 +745,12 @@
       "negative": "",
       "seed_value": 0,
       "width": [
-        "203:123",
+        "227",
         0
       ],
       "height": [
-        "203:123",
-        1
+        "229",
+        0
       ],
       "lossless_webp": true,
       "quality_jpeg_or_webp": 100,
