@@ -5,6 +5,9 @@
     "negative_prompt": "worst quality, low quality, score_1, score_2, score_3, blurry, jpeg artifacts, sepia",
     "width": 768,
     "height": 1280,
-    "model": "anima-base-v1.0.safetensors"
+    "model": "ANIMA\\hassakuAnima_v01.safetensors"
+  },
+  "_notes": {
+    "seed": "Optional PARAM_INT_SEED on node 166:165. Omit for a fresh random seed (the value used is returned in the response); pass an explicit seed to reproduce/edit a previous image."
   }
 }

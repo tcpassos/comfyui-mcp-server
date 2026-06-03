@@ -248,6 +248,7 @@ if __name__ == "__main__":
                     host="127.0.0.1",
                     port=9000,
                     log_level="info",
+                    timeout_graceful_shutdown=5,
                 )
                 server = uvicorn.Server(config)
                 await server.serve()

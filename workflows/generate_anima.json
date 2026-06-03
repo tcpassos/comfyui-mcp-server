@@ -291,7 +291,7 @@
   },
   "129": {
     "inputs": {
-      "text": "anima-base-v1.0.safetensors",
+      "text": "PARAM_STR_MODEL",
       "anything": [
         "141",
         0
@@ -299,7 +299,7 @@
     },
     "class_type": "easy showAnything",
     "_meta": {
-      "title": "Difussion model"
+      "title": "Diffusion model"
     }
   },
   "130": {
@@ -913,7 +913,7 @@
   },
   "166:165": {
     "inputs": {
-      "seed": 555774481186352
+      "seed": "PARAM_INT_SEED"
     },
     "class_type": "Seed (rgthree)",
     "_meta": {
